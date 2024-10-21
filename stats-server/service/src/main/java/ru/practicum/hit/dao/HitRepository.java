@@ -20,17 +20,10 @@ public interface HitRepository extends JpaRepository<HitStats, Integer> {
             LocalDateTime start
     );
 
-
     @Query("SELECT COUNT(h) FROM HitStats h WHERE h.timestamp < :end AND h.timestamp > :start")
     Integer countByTimestampBeforeAndTimestampAfter(@Param("start") LocalDateTime start,
                                                     @Param("end") LocalDateTime end);
 
-
-
-    @Query("SELECT COUNT(h) FROM HitStats h WHERE h.timestamp < :end AND h.timestamp > :start AND h.uri IN :uris")
-    Integer countByTimestampBeforeAndTimestampAfterAndUriIn(@Param("start") LocalDateTime start,
-                                                            @Param("end") LocalDateTime end,
-                                                            @Param("uris") String[] uris);
 
     @Query(value = "SELECT DISTINCT ON (h.ip) * FROM hits h" +
             " WHERE h.timestamp < :end AND h.timestamp > :start" +

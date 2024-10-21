@@ -39,6 +39,16 @@ public class StatsServiceImpl implements StatsService {
         }
 
         if (unique.equals(true)) {
+//            List<ResponseStatsDto> responseList = new ArrayList<>();
+//            List<HitStats> distinctHits = hitRepository.findDistinctHitsNative(start, end, uris);
+//            for (HitStats hit : distinctHits) {
+//                ResponseStatsDto responseStatsDto = StatsMapperDto.statsToHitsDto(hit);
+//                Integer hitsCount = hitRepository.countDistinctIpsByTimestampBeforeAndTimestampAfterAndUriIn(start, end, uris);
+//                responseStatsDto.setHits(hitsCount);
+//                responseList.add(responseStatsDto);
+//            }
+//            return responseList;
+
             return hitRepository.findDistinctHitsNative(start, end, uris).stream()
                     .map(StatsMapperDto::statsToHitsDto)
                     .collect(Collectors.toMap(
@@ -53,6 +63,25 @@ public class StatsServiceImpl implements StatsService {
                     .stream()
                     .toList();
         }
+
+//        List<HitStats> hits = hitRepository.findByTimestampBeforeAndTimestampAfterAndUriIn(end, start, uris);
+//        List<String> processedUris = new ArrayList<>();
+//
+//        for (HitStats hit : hits) {
+//            String uri = hit.getUri();
+//            if (!processedUris.contains(uri)) {
+//                long hitsCount = hits.stream().filter(h -> h.getUri().equals(uri)).count();
+//                ResponseStatsDto responseStatsDto = StatsMapperDto.statsToHitsDto(new HitStats());
+//                responseStatsDto.setUri(uri);
+//                responseStatsDto.setHits((int) hitsCount);
+//                responseList.add(responseStatsDto);
+//                processedUris.add(uri);
+//            }
+//        }
+//
+//           responseList.sort(Comparator.comparingInt(ResponseStatsDto::getHits).reversed());
+//
+//        return responseList;
 
         return hitRepository.findByTimestampBeforeAndTimestampAfterAndUriIn(end, start, uris).stream()
                 .collect(Collectors.groupingBy(HitStats::getUri, Collectors.counting()))
