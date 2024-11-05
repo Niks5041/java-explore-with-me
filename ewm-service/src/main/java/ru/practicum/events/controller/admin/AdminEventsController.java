@@ -1,4 +1,4 @@
-package ru.practicum.events.adminGroup.controller;
+package ru.practicum.events.controller.admin;
 
 
 import jakarta.validation.Valid;
@@ -49,20 +49,12 @@ public class AdminEventsController {
         log.info("==> GET /admin/events поиск событий по параметрам: " +
                         "users {}, states: {}, categories: {}, rangeStart: {}, rangeEnd: {}, from: {}, size: {}",
                 users, states, categories, rangeStart, rangeEnd, from, size);
-        EventSearchParams eventSearchParams = new EventSearchParams();
-        AdminSearchParams adminSearchParams = new AdminSearchParams();
-        adminSearchParams.setUsers(users);
-        adminSearchParams.setStates(states);
-        adminSearchParams.setCategories(categories);
-        adminSearchParams.setRangeStart(rangeStart);
-        adminSearchParams.setRangeEnd(rangeEnd);
-        eventSearchParams.setAdminSearchParams(adminSearchParams);
-        eventSearchParams.setFrom(from);
-        eventSearchParams.setSize(size);
-        List<EventFullDto> receivedEventSearch = eventService.getAllByAdmin(eventSearchParams);
-        log.info("<== GET /admin/events результаты поиска событий по параметрам: " +
-                        "users {}, states: {}, categories: {}, rangeStart: {}, rangeEnd: {}, from: {}, size: {}",
-                users, states, categories, rangeStart, rangeEnd, from, size);
+        AdminSearchParams adminSearchParams = new AdminSearchParams(
+                users, states, categories, rangeStart, rangeEnd);
+        EventSearchParams eventSearchParams = new EventSearchParams(
+                adminSearchParams, null, null, from, size);
+                List<EventFullDto> receivedEventSearch = eventService.getAllByAdmin(eventSearchParams);
+        log.info("<== GET /admin/events результаты поиска событий по параметрам: " + receivedEventSearch);
         return receivedEventSearch;
     }
 

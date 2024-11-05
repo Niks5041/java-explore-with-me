@@ -10,22 +10,22 @@ import org.springframework.validation.annotation.Validated;
 import ru.practicum.categories.dao.CategoryRepository;
 import ru.practicum.categories.model.Category;
 import ru.practicum.categories.model.CategoryDto;
-import ru.practicum.categories.model.CategoryMapper;
+import ru.practicum.categories.model.mapper.CategoryMapper;
 import ru.practicum.categories.model.NewCategoryDto;
 import ru.practicum.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.categories.model.CategoryMapper.dtoToCategory;
-import static ru.practicum.categories.model.CategoryMapper.toCategoryDto;
+import static ru.practicum.categories.model.mapper.CategoryMapper.dtoToCategory;
+import static ru.practicum.categories.model.mapper.CategoryMapper.toCategoryDto;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    CategoryRepository categoryRepository;
+     private final CategoryRepository categoryRepository;
 
     @Override
     public CategoryDto createCategory(@Validated NewCategoryDto dto) {

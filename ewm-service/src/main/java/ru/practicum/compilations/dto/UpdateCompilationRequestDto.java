@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UpdateCompilationRequestDto {
-    List<Long> events;
-    Boolean pinned;
+    private List<Long> events;
+    private Boolean pinned;
     @Size(min = 1, max = 50, message = "Имя не более 50 символов")
-    String title;
+    private String title;
 }

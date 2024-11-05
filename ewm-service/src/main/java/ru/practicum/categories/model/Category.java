@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @Table(name = "CATEGORIES")
 public class Category {
-
     @Id
     @Column(name = "CATEGORY_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

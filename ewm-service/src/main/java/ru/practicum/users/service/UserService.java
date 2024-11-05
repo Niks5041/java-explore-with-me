@@ -1,7 +1,7 @@
 package ru.practicum.users.service;
 
 
-import ru.practicum.users.adminGroup.controller.AdminUsersGetAllParams;
+import ru.practicum.users.controller.admin.AdminUsersGetAllParams;
 import ru.practicum.users.dto.UserCreateDto;
 import ru.practicum.users.dto.UserDto;
 import java.util.List;

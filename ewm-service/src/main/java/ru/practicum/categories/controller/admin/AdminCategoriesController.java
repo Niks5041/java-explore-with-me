@@ -1,4 +1,4 @@
-package ru.practicum.categories.adminGroup.controller;
+package ru.practicum.categories.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +32,14 @@ public class AdminCategoriesController {
     public void deleteCategory(@PathVariable long catId) {
         log.info("Пришел DELETE/admin/categories запрос с ID: {}", catId);
         categoryService.delete(catId);
+        log.info("Отправлен DELETE/admin/categories ответ об успешном удалении категории с ID: {}", catId);
     }
 
     @PatchMapping("/{catId}")
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(@PathVariable long catId, @Valid @RequestBody CategoryDto categoryDto) {
-        categoryDto.setId(catId);
         log.info("Пришел PATCH/admin/categories/{} запрос с телом: " + categoryDto, catId);
+        categoryDto.setId(catId);
         CategoryDto updateCategory = categoryService.updateCategory(categoryDto);
         log.info("Отправлен PATCH/admin/categories ответ c телом: " + updateCategory);
         return updateCategory;

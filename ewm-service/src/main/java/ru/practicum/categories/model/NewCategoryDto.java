@@ -10,5 +10,5 @@ public class NewCategoryDto {
     @Pattern(regexp = "\\S+")
     @Size(max = 50, message = "Имя не более 50 символов")
     @NotNull
-    String name;
+    private String name;
 }

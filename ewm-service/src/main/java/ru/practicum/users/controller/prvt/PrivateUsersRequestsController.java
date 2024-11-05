@@ -1,4 +1,4 @@
-package ru.practicum.users.privateGroup.controller;
+package ru.practicum.users.controller.prvt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class PrivateUsersRequestsController {
                 "Получить все запросы для пользователя id: {} ", userId);
         List<ParticipationRequestDto> requestDtoList = requestService.getAllOwnRequests(userId);
         log.info("<== GET. /users/{userId}/requests " +
-                "Вернули все запросы пользователя id: {} ", userId);
+                "Вернули все запросы пользователя id: {} с телом: {}", userId, requestDtoList);
         return requestDtoList;
     }
 
@@ -50,7 +50,7 @@ public class PrivateUsersRequestsController {
                 "Отмена запроса id {} пользователем id: {} ", requestId, userId);
         ParticipationRequestDto receivedDto = requestService.cancel(userId, requestId);
         log.info("<== PATCH. /users/{userId}/requests/{requestId}/cancel" +
-                "Отменен запрос id {} пользователем id: {} ", requestId, userId);
+                "Отменен запрос id {} пользователем id: {} с телом ответа: {}", requestId, userId, receivedDto);
         return receivedDto;
     }
 }

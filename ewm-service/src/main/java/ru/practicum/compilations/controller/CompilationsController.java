@@ -1,4 +1,4 @@
-package ru.practicum.compilations.publicGroup.controller;
+package ru.practicum.compilations.controller;
 
 
 import lombok.RequiredArgsConstructor;
@@ -18,18 +18,23 @@ public class CompilationsController {
 
     private final CompilationsService compilationService;
 
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CompilationDto> getAll(@RequestParam(value = "pinned", required = false, defaultValue = "false") Boolean pinned,
                                        @RequestParam(value = "from", defaultValue = "0") int from,
                                        @RequestParam(value = "size", defaultValue = "10") int size) {
-        return compilationService.getAll(pinned, from, size);
+        log.info("Получен GET /compilations запрос с параметрами: pinned={}, from={}, size={}", pinned, from, size);
+        List<CompilationDto> compilations = compilationService.getAll(pinned, from, size);
+        log.info("Отправлен ответ GET /compilations с количеством событий: {}", compilations.size());
+        return compilations;
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto getById(@PathVariable("id") long id) {
-        return compilationService.getById(id);
+        log.info("Получен GET /compilations/{} запрос", id);
+        CompilationDto compilation = compilationService.getById(id);
+        log.info("Отправлен ответ GET /compilations/{}: {}", id, compilation);
+        return compilation;
     }
 }

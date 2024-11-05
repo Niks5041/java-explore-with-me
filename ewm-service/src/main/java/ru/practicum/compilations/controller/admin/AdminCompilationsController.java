@@ -1,4 +1,4 @@
-package ru.practicum.compilations.adminGroup.controller;
+package ru.practicum.compilations.controller.admin;
 
 
 import jakarta.validation.Valid;
@@ -25,21 +25,26 @@ public class AdminCompilationsController {
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(
             @Valid @RequestBody NewCompilationDto dto) {
-        log.info("Пришел POST/admin/compilations запрос с телом: " + dto);
-        return compilationService.createCompilation(dto);
+        log.info("Пришел POST /admin/compilations запрос с телом: {}", dto);
+        CompilationDto response = compilationService.createCompilation(dto);
+        log.info("Отправлен POST /admin/compilations ответ: {}", response);
+        return response;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable long id) {
-        log.info("Пришел DELETE/admin/compilations/{} запрос", id);
+        log.info("Пришел DELETE /admin/compilations/{} запрос", id);
         compilationService.delete(id);
+        log.info("Удаление завершено для категории с ID: {}", id);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto updateCompilation(@PathVariable long id, @Valid @RequestBody UpdateCompilationRequestDto compilationDto) {
-        log.info("Пришел PATCH/admin/compilations/{} запрос " + compilationDto, id);
-        return compilationService.updateCompilation(id, compilationDto);
+        log.info("Пришел PATCH /admin/compilations/{} запрос с телом: {}", id, compilationDto);
+        CompilationDto response = compilationService.updateCompilation(id, compilationDto);
+        log.info("Отправлен ответ с обновленными данными: {}", response);
+        return response;
     }
 }

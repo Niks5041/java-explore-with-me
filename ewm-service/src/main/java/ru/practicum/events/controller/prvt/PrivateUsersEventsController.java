@@ -1,4 +1,4 @@
-package ru.practicum.events.privateGroup.controller;
+package ru.practicum.events.controller.prvt;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import ru.practicum.params.EventGetByIdParams;
 import ru.practicum.params.EventUpdateParams;
 import ru.practicum.params.search.EventSearchParams;
 import ru.practicum.params.search.PrivateSearchParams;
-import ru.practicum.users.PrivateUpdateRequestParams;
+import ru.practicum.users.controller.prvt.PrivateUpdateRequestParams;
 import ru.practicum.users.service.RequestService;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class PrivateUsersEventsController {
                 "Создание события {} пользователем id: {}", newEventDto, userId);
         EventFullDto receivedEventDto = eventService.create(userId, newEventDto);
         log.info("<== POST. /users/{userId}/events " +
-                "Создано событие {}: {}", receivedEventDto.id(), receivedEventDto);
+                "Создано событие {} c телом ответа: {}", receivedEventDto.id(), receivedEventDto);
         return receivedEventDto;
     }
 
@@ -52,7 +52,7 @@ public class PrivateUsersEventsController {
                 eventService.getAllByInitiator(searchParams);
 
         log.info("<== GET. /users/{userId}/events " +
-                "Получены события для пользователя id {}: size {}", userId, receivedEventsDtoList.size());
+                "Получены события для пользователя c id {} c телом ответа: {}", userId, receivedEventsDtoList);
         return receivedEventsDtoList;
     }
 
@@ -62,7 +62,7 @@ public class PrivateUsersEventsController {
                 "Получить событие id: {}, by user with id: {}", eventId, userId);
         EventFullDto receivedEventDto = eventService.getById(new EventGetByIdParams(userId, eventId), null);
         log.info("<== GET. /users/{userId}/events/{eventId} " +
-                "Вернули событие id: {}", receivedEventDto.id());
+                "Вернули событие c id {} c телом ответа: {}", eventId, receivedEventDto);
         return receivedEventDto;
     }
 
@@ -76,7 +76,7 @@ public class PrivateUsersEventsController {
         EventFullDto receivedEventDto = eventService.update(
                 eventId, new EventUpdateParams(userId, updateEventDto, null));
         log.info("<== PATCH. /users/{userId}/events/{eventId} " +
-                        "Обновлено событие id: {}, пользователем id: {}  {}",
+                        "Обновлено событие id: {}, пользователем id: {} c телом ответа: {}",
                 eventId, userId, receivedEventDto);
         return receivedEventDto;
     }
@@ -92,7 +92,8 @@ public class PrivateUsersEventsController {
                 = requestService.getAllForOwnEvent(userId, eventId);
 
         log.info("<== GET. /users/{userId}/events/{eventId}/requests " +
-                "Отправлен запрос на событие id: {} от пользователя id: {}", eventId, userId);
+                "Отправлен запрос на событие c id: {} от пользователя c id: {}, c телом ответа: {}",
+                eventId, userId, receivedRequestsDtoList);
 
         return receivedRequestsDtoList;
     }
@@ -108,7 +109,8 @@ public class PrivateUsersEventsController {
         EventRequestStatusUpdateResult eventUpdateResult =
                 requestService.updateStatus(new PrivateUpdateRequestParams(userId, eventId, updateRequestStatusDto));
         log.info("<== PATCH. /users/{userId}/events/{eventId}/requests " +
-                "Изменен запрос на событие id: {} от пользователя id: {}", eventId, userId);
+                "Изменен запрос на событие id: {} от пользователя id: {}, c телом ответа: {}",
+                eventId, userId, eventUpdateResult);
         return eventUpdateResult;
     }
 

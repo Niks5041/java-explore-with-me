@@ -9,9 +9,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CategoryDto {
-    long id;
+    private long id;
     @Pattern(regexp = "\\S+")
     @Size(max = 50, message = "Имя не более 50 символов")
     @NotNull
-    String name;
+    private String name;
 }

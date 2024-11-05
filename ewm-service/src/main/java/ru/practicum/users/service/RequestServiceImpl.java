@@ -12,7 +12,7 @@ import ru.practicum.events.model.enums.EventState;
 import ru.practicum.exceptions.AccessException;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
-import ru.practicum.users.PrivateUpdateRequestParams;
+import ru.practicum.users.controller.prvt.PrivateUpdateRequestParams;
 import ru.practicum.users.dao.RequestRepository;
 import ru.practicum.users.dao.UserRepository;
 import ru.practicum.users.dto.mapper.RequestMapper;

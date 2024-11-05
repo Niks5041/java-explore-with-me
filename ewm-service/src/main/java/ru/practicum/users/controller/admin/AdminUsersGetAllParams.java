@@ -1,4 +1,4 @@
-package ru.practicum.users.adminGroup.controller;
+package ru.practicum.users.controller.admin;
 
 public record AdminUsersGetAllParams(
         Long[] ids,

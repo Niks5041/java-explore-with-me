@@ -1,4 +1,4 @@
-package ru.practicum.events.publicGroup.controller;
+package ru.practicum.events.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,18 +51,20 @@ public class EventsController {
             throw new IncorrectValueException("rangeStart of event can't be after rangeEnd");
         }
 
-        EventSearchParams eventSearchParams = new EventSearchParams();
-        PublicSearchParams publicSearchParams = new PublicSearchParams();
-        publicSearchParams.setText(text);
-        publicSearchParams.setCategories(categories);
-        publicSearchParams.setPaid(paid);
-
-        publicSearchParams.setRangeStart(rangeStart);
-        publicSearchParams.setRangeEnd(rangeEnd);
-
-        eventSearchParams.setPublicSearchParams(publicSearchParams);
-        eventSearchParams.setFrom(from);
-        eventSearchParams.setSize(size);
+        PublicSearchParams publicSearchParams = new PublicSearchParams(
+                text,
+                categories,
+                paid,
+                rangeStart,
+                rangeEnd,
+                null
+        );
+        EventSearchParams eventSearchParams = new EventSearchParams(
+                null,
+                null,
+                publicSearchParams,
+                from,
+                size);
 
         HitDto hitDto = new HitDto(
                 null,
@@ -72,8 +74,7 @@ public class EventsController {
                 LocalDateTime.now().format(dateTimeFormatter));
 
         List<EventShortDto> eventShortDtoList = eventService.getAllByPublic(eventSearchParams, hitDto);
-        log.info("<== GET /events Получен список событий размером {}",
-                eventShortDtoList.size());
+        log.info("<== GET /events Получен список событий: " + eventShortDtoList);
         return eventShortDtoList;
     }
 
@@ -94,7 +95,8 @@ public class EventsController {
         if (eventFullDto.state() != EventState.PUBLISHED) {
             throw new NotFoundException("Нет опубликованных событий с id " + id);
         }
-        log.info("<== GET /events/{}  Public getById", id);
+        log.info("<== GET /events/{} Получено событие по ID: {} c телом ответа: {}",
+                id, id, eventFullDto);
         return eventFullDto;
     }
 }

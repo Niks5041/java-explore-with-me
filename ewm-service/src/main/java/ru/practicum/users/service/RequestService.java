@@ -2,7 +2,7 @@ package ru.practicum.users.service;
 
 import ru.practicum.events.dto.EventRequestStatusUpdateResult;
 import ru.practicum.events.dto.ParticipationRequestDto;
-import ru.practicum.users.PrivateUpdateRequestParams;
+import ru.practicum.users.controller.prvt.PrivateUpdateRequestParams;
 
 import java.util.List;
 

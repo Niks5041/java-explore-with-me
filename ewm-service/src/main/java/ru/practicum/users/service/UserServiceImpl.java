@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exceptions.NotFoundException;
-import ru.practicum.users.adminGroup.controller.AdminUsersGetAllParams;
+import ru.practicum.users.controller.admin.AdminUsersGetAllParams;
 import ru.practicum.users.dao.UserRepository;
 import ru.practicum.users.dto.UserCreateDto;
 import ru.practicum.users.dto.UserDto;
@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override

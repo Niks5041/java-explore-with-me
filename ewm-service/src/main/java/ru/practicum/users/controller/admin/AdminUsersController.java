@@ -1,4 +1,4 @@
-package ru.practicum.users.adminGroup.controller;
+package ru.practicum.users.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class AdminUsersController {
         log.info("==> GET. Получение пользователей по id: {}, from: {}, size {}", ids, from, size);
         AdminUsersGetAllParams adminUsersGetAllParams = new AdminUsersGetAllParams(ids, from, size);
         List<UserDto> receivedUserDtoList = userService.getAll(adminUsersGetAllParams);
-        log.info("<== GET. Получен список пользователей размером: {}", receivedUserDtoList.size());
+        log.info("<== GET. Получен список пользователей: " +  receivedUserDtoList);
         return receivedUserDtoList;
     }
 }
