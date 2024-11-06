@@ -34,7 +34,8 @@ import ru.practicum.users.model.RequestStatus;
 import ru.practicum.users.model.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.practicum.events.model.QEvent.event;
 
@@ -76,7 +77,11 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("User with id " + initiatorId + " not found"));
         Pageable page = PageRequest.of(searchParams.getFrom(), searchParams.getSize());
 
-        return eventRepository.findAllByInitiatorId(initiatorId, page).stream()
+        List<Event> receivedEvents = eventRepository.findAllByInitiatorId(initiatorId, page);
+        for (Event event : receivedEvents) {
+            event.setLikes(eventRepository.countLikesByEventId(event.getId()));
+        }
+        return receivedEvents.stream()
                 .map(eventMapper::eventToEventShortDto)
                 .toList();
     }
@@ -154,6 +159,7 @@ public class EventServiceImpl implements EventService {
             event.setViews(view);
             event.setConfirmedRequests(
                     requestRepository.countByStatusAndEventId(RequestStatus.CONFIRMED, event.getId()));
+            event.setLikes(eventRepository.countLikesByEventId(event.getId()));
         }
 
         return eventListBySearch.stream()
@@ -201,6 +207,7 @@ public class EventServiceImpl implements EventService {
         List<Event> receivedEventList = eventRepository.findAll(booleanExpression, page).stream().toList();
         for (Event event : receivedEventList) {
             event.setConfirmedRequests(requestRepository.countByStatusAndEventId(RequestStatus.CONFIRMED, event.getId()));
+            event.setLikes(eventRepository.countLikesByEventId(event.getId()));
         }
 
         return receivedEventList
@@ -237,6 +244,7 @@ public class EventServiceImpl implements EventService {
             receivedEvent.setViews(view);
             receivedEvent.setConfirmedRequests(
                     requestRepository.countByStatusAndEventId(RequestStatus.CONFIRMED, receivedEvent.getId()));
+            receivedEvent.setLikes(eventRepository.countLikesByEventId(receivedEvent.getId()));
         }
         return eventMapper.eventToEventFullDto(receivedEvent);
     }
@@ -319,11 +327,114 @@ public class EventServiceImpl implements EventService {
 
         updatedEvent = eventRepository.save(event);
 
+        updatedEvent.setLikes(eventRepository.countLikesByEventId(updatedEvent.getId()));
+
         log.debug("Событие возвращенное из базы: {} ; {}", event.getId(), event.getState());
 
         return eventMapper.eventToEventFullDto(updatedEvent);
     }
 
+    @Override
+    public EventShortDto addLike(long userId, long eventId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь id " + userId + " не найден"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие id " + eventId + " не найдено"));
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new ConflictException("Событие id " + eventId + " не опубликовано");
+        }
+        eventRepository.addLike(userId, eventId);
+        event.setLikes(eventRepository.countLikesByEventId(eventId));
+        return eventMapper.eventToEventShortDto(event);
+    }
 
+    @Override
+    public void deleteLike(long userId, long eventId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь id " + userId + " не найден"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие id " + eventId + " не найдено"));
+        boolean isLikeExist = eventRepository.checkLikeExisting(userId, eventId);
+        if (isLikeExist) {
+            eventRepository.deleteLike(userId, eventId);
+        } else {
+            throw new NotFoundException("Лайк для события: " + eventId + " пользователем: " + user.getId() + " не установлен");
+        }
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> getTopEvent(Integer count, HitDto hitDto) {
+
+        String rangeEnd = LocalDateTime.now().format(dateTimeFormatter);
+        String rangeStart = LocalDateTime.now().minusYears(100).format(dateTimeFormatter);
+
+        List<Event> eventListBySearch = eventRepository.findTop(count);
+
+        statClient.saveHit(hitDto);
+
+        for (Event event : eventListBySearch) {
+            List<HitStatDto> hitStatDtoList = statClient.getStats(
+                    rangeStart,
+                    rangeEnd,
+                    List.of("/event/" + event.getId()),
+                    true);
+            Long view = 0L;
+            for (HitStatDto hitStatDto : hitStatDtoList) {
+                view += hitStatDto.getHits();
+            }
+            event.setViews(view);
+            event.setConfirmedRequests(
+                    requestRepository.countByStatusAndEventId(RequestStatus.CONFIRMED, event.getId()));
+            event.setLikes(eventRepository.countLikesByEventId(event.getId()));
+        }
+
+        return eventListBySearch.stream()
+                .map(eventMapper::eventToEventShortDto)
+                .toList();
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> getTopViewEvent(Integer count, HitDto hitDto) {
+
+        String rangeEnd = LocalDateTime.now().format(dateTimeFormatter);
+        String rangeStart = LocalDateTime.now().minusYears(100).format(dateTimeFormatter);
+
+        statClient.saveHit(hitDto);
+
+        List<HitStatDto> hitStatDtoList = statClient.getStats(
+                rangeStart,
+                rangeEnd,
+                null,
+                true);
+
+        Map<Long, Long> idsMap = hitStatDtoList.stream().filter(it -> it.getUri().matches("\\/events\\/\\d+$"))
+                .collect((Collectors.groupingBy(dto ->
+                                Long.parseLong(dto.getUri().replace("/events/", "")),
+                        Collectors.summingLong(HitStatDto::getHits))));
+
+        Set<Long> ids = idsMap.keySet();
+        List<Event> eventListBySearch = eventRepository.findAllById(ids);
+        List<Event> result = new ArrayList<>();
+        idsMap.entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(count)
+                .forEach(it -> {
+                            Optional<Event> e = eventListBySearch.stream().filter(event ->
+                                    event.getId() == it.getKey()).findFirst();
+                            if (e.isPresent()) {
+                                Event eventRes = e.get();
+                                eventRes.setViews(it.getValue());
+                                result.add(eventRes);
+                            }
+                        }
+                );
+        return result.stream()
+                .map(eventMapper::eventToEventShortDto)
+                .toList();
+    }
 }
 
