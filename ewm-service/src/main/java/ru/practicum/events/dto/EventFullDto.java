@@ -21,19 +21,13 @@ public record EventFullDto(
         UserShortDto initiator,
         Location location,
         boolean paid,
-
         Integer participantLimit,
-
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
         LocalDateTime publishedOn,
-
         boolean requestModeration,
-
         EventState state,
-
         String title,
-
-        long views
+        long views,
+        long likesCount
 ) {
-
 }

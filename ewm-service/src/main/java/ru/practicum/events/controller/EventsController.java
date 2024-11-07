@@ -99,4 +99,40 @@ public class EventsController {
                 id, id, eventFullDto);
         return eventFullDto;
     }
+
+    @GetMapping("/top")
+    public List<EventShortDto> getTop(
+            @RequestParam(required = false, defaultValue = "10") Integer count,
+            HttpServletRequest httpRequest) {
+        log.info("==> GET /events/top");
+
+        HitDto hitDto = new HitDto(
+                null,
+                "ewm-service",
+                httpRequest.getRequestURI(),
+                httpRequest.getRemoteAddr(),
+                LocalDateTime.now().format(dateTimeFormatter));
+
+        List<EventShortDto> eventShortDtoList = eventService.getTopEvent(count, hitDto);
+        log.info("<== GET /events Returning top {}", eventShortDtoList);
+        return eventShortDtoList;
+    }
+
+    @GetMapping("/top-view")
+    public List<EventShortDto> getTopView(
+            @RequestParam(required = false, defaultValue = "10") Integer count,
+            HttpServletRequest httpRequest) {
+        log.info("==> GET /events/top-view");
+
+        HitDto hitDto = new HitDto(
+                null,
+                "ewm-service",
+                httpRequest.getRequestURI(),
+                httpRequest.getRemoteAddr(),
+                LocalDateTime.now().format(dateTimeFormatter));
+
+        List<EventShortDto> eventShortDtoList = eventService.getTopViewEvent(count, hitDto);
+        log.info("<== GET /events Returning top view {}", eventShortDtoList);
+        return eventShortDtoList;
+    }
 }

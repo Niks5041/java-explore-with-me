@@ -20,4 +20,13 @@ public interface EventService {
     List<EventShortDto> getAllByInitiator(EventSearchParams searchParams);
 
     List<EventShortDto> getAllByPublic(EventSearchParams searchParams, HitDto hitDto);
+
+    EventShortDto addLike(long userId, long eventId);
+
+    void deleteLike(long userId, long eventId);
+
+    List<EventShortDto> getTopEvent(Integer count, HitDto hitDto);
+
+    List<EventShortDto> getTopViewEvent(Integer count, HitDto hitDto);
+
 }

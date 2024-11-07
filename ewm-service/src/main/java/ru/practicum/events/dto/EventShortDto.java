@@ -22,6 +22,7 @@ public record EventShortDto(
         Location location,
         boolean paid,
         String title,
-        Long views
+        Long views,
+        Long likesCount
 ) {
 }

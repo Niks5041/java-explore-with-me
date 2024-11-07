@@ -114,4 +114,28 @@ public class PrivateUsersEventsController {
         return eventUpdateResult;
     }
 
+    @PutMapping("/{eventId}/likes")
+    public EventShortDto addLike(//Добавление лайка события
+                                 @PathVariable long userId,
+                                 @PathVariable long eventId
+    ) {
+        log.info("==> PUT. /users/{userId}/events/{eventId}/likes" +
+                "Добавление лайка для события id: {} by user with id: {}", eventId, userId);
+        EventShortDto eventShortDto = eventService.addLike(userId, eventId);
+        log.info("<== PUT. /users/{userId}/events/{eventId}/likes" +
+                "Добавлен лайк для события: {} пользователем c id: {} ", eventShortDto, userId);
+        return eventShortDto;
+    }
+
+    @DeleteMapping("/{eventId}/likes")
+    public void deleteLike(//удаление лайка события
+                           @PathVariable long userId,
+                           @PathVariable long eventId
+    ) {
+        log.info("==> DELETE. /users/{userId}/events/{eventId}/likes" +
+                "Удаление лайка для события id: {} пользователем id: {}", eventId, userId);
+        eventService.deleteLike(userId, eventId);
+        log.info("<== DELETE. /users/{userId}/events/{eventId}/likes" +
+                "Удален лайк для события c id: {} пользователем c id: {} deleted.", eventId, userId);
+    }
 }
